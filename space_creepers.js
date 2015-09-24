@@ -71,7 +71,6 @@ $(document).ready(function() {
 					hit = projectileEnemyCollision(projectileLeft, projectileTop, enemies[count]);
 					if (hit){
 						enemies.splice([count],1);
-						alert(enemies);
 					}
 				}
 			}
@@ -101,17 +100,13 @@ $(document).ready(function() {
 		return false;
 	}
 
-//	// Spawn new enemies
-//	setInterval(function(){
-//		$('#game').append('<div class="enemy" id="enemy' + enemyCount + '"></div>');	
-//		enemies.push(new enemy("enemy" + enemyCount + ""));
-//		enemyCount += 1;
-//	}, 1000);
-
-	
-	$('#game').append('<div class="enemy" id="enemy1"></div>');
-	enemies.push(new enemy("#enemy1"));
-	enemyMove('#enemy1');
+	// Spawn new enemies
+	setInterval(function(){
+		$('#game').append('<div class="enemy" id="enemy' + enemyCount + '"></div>');	
+		enemies.push(new enemy("#enemy" + enemyCount + ""));
+		enemyMove("#enemy" + enemyCount + "");
+		enemyCount += 1;
+	}, 10000);
 
 	// Move enemy toward spaceship
 	function enemyMove(enemy) {

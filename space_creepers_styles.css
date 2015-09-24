@@ -20,6 +20,18 @@ body {
 	margin: auto;
 }
 
+#score_bar_back {
+	position: absolute;
+	left: 200px;
+	height: 50px;
+	width: 200px;
+	z-index: 2;
+	background-color: black;
+	color: white;
+	font-family: arial;
+	text-align: center;
+}
+
 #health_bar_back {
 	position: absolute;
 	left: 400px;
@@ -55,6 +67,14 @@ body {
 	width: 180px;
 	z-index: 3;
 	background-color: #52bab3;
+}
+
+.enemy {
+	position: absolute;
+	height: 50px;	
+	width: 50px;
+	border-radius: 25px;
+	background-color: red;	
 }
 
 .projectile {

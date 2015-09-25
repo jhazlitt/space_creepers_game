@@ -118,7 +118,10 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 				var projectileHit = false;
 				projectileHit = projectileEnemyCollision(projectileID, enemies[count]);
 				if (projectileHit){
+					destroy(enemies[count].ID);
 					enemies.splice([count],1);
+					score += 1;
+					displayScore();
 				}
 			}
 		}
@@ -141,9 +144,6 @@ function projectileEnemyCollision(projectileID, enemy) {
 	var enemyUpperBoundY = enemyLowerBoundY + 50;
 	
 	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
-		destroy(enemy.ID);
-		score += 1;
-		displayScore();
 		return true;
 	}
 	return false;

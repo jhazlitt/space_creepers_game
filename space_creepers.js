@@ -111,7 +111,7 @@ function displayScore(){
 
 // Move projectile
 function moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed){
-	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, {step: function(now,fx){
+	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, {duration: 1000, step: function(now,fx){
 		var projectileLeft = $(projectileID).position().left;	
 		var projectileTop = $(projectileID).position().top;	
 
@@ -131,7 +131,7 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 			destroy(projectileID);
 			projectileDestroyed = true;
 		}
-	}}, 5000);
+	}});
 }
 
 // Check if projectile hit enemy

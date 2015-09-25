@@ -102,11 +102,33 @@ $(document).ready(function() {
 
 	// Spawn new enemies
 	setInterval(function(){
+		var enemyLeft = 0;
+		var enemyTop = 0;
+		var locations = ["top","right","bottom","left"];
+		var thisLocation = locations[Math.floor(Math.random()*locations.length)];
+		if (thisLocation === "top"){
+			enemyLeft = Math.floor(Math.random()*550);
+			enemyTop = 0;
+		}
+		else if (thisLocation === "right"){
+			enemyLeft = 550;
+			enemyTop = Math.floor(Math.random()*550);
+		}
+		else if (thisLocation === "bottom"){
+			enemyLeft = Math.floor(Math.random()*550);
+			enemyTop = 550;	
+		}
+		else if (thisLocation === "left"){
+			enemyLeft = 0;
+			enemyTop = Math.floor(Math.random()*550);
+		}
 		$('#game').append('<div class="enemy" id="enemy' + enemyCount + '"></div>');	
+		$('#enemy' + enemyCount + '').css("left","" + enemyLeft + "px");
+		$('#enemy' + enemyCount + '').css("top","" + enemyTop + "px");
 		enemies.push(new enemy("#enemy" + enemyCount + ""));
 		enemyMove("#enemy" + enemyCount + "");
 		enemyCount += 1;
-	}, 10000);
+	}, 500);
 
 	// Move enemy toward spaceship
 	function enemyMove(enemy) {

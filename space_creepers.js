@@ -9,6 +9,7 @@ $(document).ready(function() {
 	var enemies = [];
 	var score = 0;
 	var enemyCount = 1;
+	var shieldsUp = false;
 
 	function enemy(ID) {
 		this.ID = ID
@@ -37,10 +38,12 @@ $(document).ready(function() {
 		if (evt.keyCode === 32) {
 			if($('#shield_bar').width() === 0){ 
 				$('#shield').hide();
+				shieldsUp = false;
 			}
 			else {
 				$('#shield').show();
 				$('#shield_bar').css('width','-=1px');
+				shieldsUp = true;
 			}
 		}
 	});
@@ -65,19 +68,20 @@ $(document).ready(function() {
 			var projectileTop = $(projectileID).position().top;	
 
 			// Check if the projectile hit an enemy	
-			if ((!hit) && (projectileDestroyed === false)) {
+			if ((!projectileHit) && (projectileDestroyed === false)) {
 				for (count in enemies){
-					var hit = false;
-					hit = projectileEnemyCollision(projectileLeft, projectileTop, enemies[count]);
-					if (hit){
+					var projectileHit = false;
+					projectileHit = projectileEnemyCollision(projectileLeft, projectileTop, enemies[count]);
+					if (projectileHit){
 						enemies.splice([count],1);
 					}
 				}
 			}
 
 			// Check if the projectile is out of bounds
-			if ((projectileLeft <= 10) || (projectileLeft >= 590) || (projectileTop <= 0) || (projectileTop >= 590)){
-				$(projectileID).hide();
+			if ((projectileLeft <= 10) || (projectileLeft >= 585) || (projectileTop <= 0) || (projectileTop >= 580)){
+				$(projectileID).finish();
+				$(projectileID).remove();
 				projectileDestroyed = true;
 			}
 		}}, 1000);
@@ -92,6 +96,7 @@ $(document).ready(function() {
 		enemyUpperBoundY = enemyLowerBoundY + 50;
 		
 		if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
+			$(enemy.ID).finish();
 			$(enemy.ID).remove();
 			score += 1;
 			$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
@@ -128,12 +133,53 @@ $(document).ready(function() {
 		enemies.push(new enemy("#enemy" + enemyCount + ""));
 		enemyMove("#enemy" + enemyCount + "");
 		enemyCount += 1;
-	}, 500);
+	}, 2000);
 
 	// Move enemy toward spaceship
 	function enemyMove(enemy) {
 		enemyMoveX = -$(enemy).position().left + 275;
 		enemyMoveY = -$(enemy).position().top + 275;
-		$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" }, 30000);	
+		$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },{duration: 5000, step: function(){
+			var spaceshipHit = false;
+			spaceshipHit = spaceshipCollision(enemy);
+
+			if (spaceshipHit === "hit"){
+				$(enemy).finish();
+				$(enemy).remove();
+				for (count in enemies){
+					if (enemies[count].ID === enemy){
+						enemies.splice(count,1);
+					}
+				}
+				$('#health_bar').css("width","-=10");
+			}
+			else if (spaceshipHit === "shield_block"){
+				$(enemy).finish();
+				$(enemy).remove();
+				for (count in enemies){
+					if (enemies[count].ID === enemy){
+						enemies.splice(count,1);
+					}
+				}
+				score += 1;
+				$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
+			}
+		}});	
+	}
+
+	// Check if enemy hit spaceship
+	function spaceshipCollision(enemy) {
+		enemyCenterX = $(enemy).position().left + 25;
+		enemyCenterY = $(enemy).position().top + 25;
+	
+		if (((enemyCenterX >= 250) && (enemyCenterX <= 350)) && ((enemyCenterY >= 250) && (enemyCenterY <= 350))) {
+			if (shieldsUp) {
+				return "shield_block";
+			}
+			else {
+				return "hit";
+			}
+		}	
+		return "no_hit";
 	}
 });

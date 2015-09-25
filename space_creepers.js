@@ -112,14 +112,11 @@ function displayScore(){
 // Move projectile
 function moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed){
 	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, {duration: 1000, step: function(now,fx){
-		var projectileLeft = $(projectileID).position().left;	
-		var projectileTop = $(projectileID).position().top;	
-
 		// Check if the projectile hit an enemy	
 		if ((!projectileHit) && (projectileDestroyed === false)) {
 			for (count in enemies){
 				var projectileHit = false;
-				projectileHit = projectileEnemyCollision(projectileLeft, projectileTop, enemies[count]);
+				projectileHit = projectileEnemyCollision(projectileID, enemies[count]);
 				if (projectileHit){
 					enemies.splice([count],1);
 				}
@@ -135,11 +132,13 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 }
 
 // Check if projectile hit enemy
-function projectileEnemyCollision(projectileX, projectileY, enemy) {
-	enemyLowerBoundX = $(enemy.ID).position().left;
-	enemyUpperBoundX = enemyLowerBoundX + 50;
-	enemyLowerBoundY = $(enemy.ID).position().top;
-	enemyUpperBoundY = enemyLowerBoundY + 50;
+function projectileEnemyCollision(projectileID, enemy) {
+	var projectileX = $(projectileID).position().left;	
+	var projectileY = $(projectileID).position().top;	
+	var enemyLowerBoundX = $(enemy.ID).position().left;
+	var enemyUpperBoundX = enemyLowerBoundX + 50;
+	var enemyLowerBoundY = $(enemy.ID).position().top;
+	var enemyUpperBoundY = enemyLowerBoundY + 50;
 	
 	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
 		destroy(enemy.ID);

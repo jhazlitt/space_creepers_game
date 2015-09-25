@@ -109,28 +109,6 @@ function displayScore(){
 	$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
 }
 
-// Check if projectile hit enemy
-function projectileEnemyCollision(projectileX, projectileY, enemy) {
-	enemyLowerBoundX = $(enemy.ID).position().left;
-	enemyUpperBoundX = enemyLowerBoundX + 50;
-	enemyLowerBoundY = $(enemy.ID).position().top;
-	enemyUpperBoundY = enemyLowerBoundY + 50;
-	
-	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
-		destroy(enemy.ID);
-		score += 1;
-		displayScore();
-		return true;
-	}
-	return false;
-}
-
-// Destroy 
-function destroy(ID) {
-	$(ID).finish();
-	$(ID).remove();
-}
-
 // Move projectile
 function moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed){
 	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, {step: function(now,fx){
@@ -149,11 +127,43 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 		}
 
 		// Check if the projectile is out of bounds
-		if ((projectileLeft <= 10) || (projectileLeft >= 585) || (projectileTop <= 0) || (projectileTop >= 580)){
+		if (outOfBounds(projectileID)){ 
 			destroy(projectileID);
 			projectileDestroyed = true;
 		}
 	}}, 5000);
+}
+
+// Check if projectile hit enemy
+function projectileEnemyCollision(projectileX, projectileY, enemy) {
+	enemyLowerBoundX = $(enemy.ID).position().left;
+	enemyUpperBoundX = enemyLowerBoundX + 50;
+	enemyLowerBoundY = $(enemy.ID).position().top;
+	enemyUpperBoundY = enemyLowerBoundY + 50;
+	
+	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
+		destroy(enemy.ID);
+		score += 1;
+		displayScore();
+		return true;
+	}
+	return false;
+}
+
+// Detect if object is out of game area
+function outOfBounds(ID){
+	IDLeft = $(ID).position().left;
+	IDTop = $(ID).position().top; 
+	if ((IDLeft <= 10) || (IDLeft >= 585) || (IDTop <= 0) || (IDTop >= 580)){
+		return true;
+	}
+	return false;	
+}
+
+// Destroy 
+function destroy(ID) {
+	$(ID).finish();
+	$(ID).remove();
 }
 
 // Move enemy toward spaceship

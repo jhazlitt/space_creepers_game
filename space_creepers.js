@@ -17,7 +17,7 @@ function enemy(ID) {
 $(document).ready(setupGame);
 
 function setupGame(){
-	$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
+	displayScore();
 	$('#shield').hide();
 	playGame();
 }
@@ -101,7 +101,12 @@ function playGame(){
 		enemies.push(new enemy("#enemy" + enemyCount + ""));
 		enemyMove("#enemy" + enemyCount + "");
 		enemyCount += 1;
-	},300);
+	},5000);
+}
+
+// Update html for score
+function displayScore(){
+	$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
 }
 
 // Check if projectile hit enemy
@@ -115,7 +120,7 @@ function projectileEnemyCollision(projectileX, projectileY, enemy) {
 		$(enemy.ID).finish();
 		$(enemy.ID).remove();
 		score += 1;
-		$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
+		displayScore();
 		return true;
 	}
 	return false;
@@ -144,7 +149,7 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 			$(projectileID).remove();
 			projectileDestroyed = true;
 		}
-	}}, 1000);
+	}}, 5000);
 }
 
 // Move enemy toward spaceship
@@ -174,7 +179,7 @@ function enemyMove(enemy) {
 				}
 			}
 			score += 1;
-			$('#score_bar_back').html("<h1>Score: " + score + "</h1>");
+			displayScore();
 		}
 	}});	
 }

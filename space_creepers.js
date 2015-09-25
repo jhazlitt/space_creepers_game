@@ -117,8 +117,7 @@ function projectileEnemyCollision(projectileX, projectileY, enemy) {
 	enemyUpperBoundY = enemyLowerBoundY + 50;
 	
 	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
-		$(enemy.ID).finish();
-		$(enemy.ID).remove();
+		destroy(enemy.ID);
 		score += 1;
 		displayScore();
 		return true;
@@ -126,10 +125,10 @@ function projectileEnemyCollision(projectileX, projectileY, enemy) {
 	return false;
 }
 
-// Destroy projectile
-function destroyProjectile(projectileID) {
-	$(projectileID).finish();
-	$(projectileID).remove();
+// Destroy 
+function destroy(ID) {
+	$(ID).finish();
+	$(ID).remove();
 }
 
 // Move projectile
@@ -151,7 +150,7 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 
 		// Check if the projectile is out of bounds
 		if ((projectileLeft <= 10) || (projectileLeft >= 585) || (projectileTop <= 0) || (projectileTop >= 580)){
-			destroyProjectile(projectileID);
+			destroy(projectileID);
 			projectileDestroyed = true;
 		}
 	}}, 5000);
@@ -166,8 +165,7 @@ function enemyMove(enemy) {
 		spaceshipHit = spaceshipCollision(enemy);
 
 		if (spaceshipHit === "hit"){
-			$(enemy).finish();
-			$(enemy).remove();
+			destroy(enemy);
 			for (count in enemies){
 				if (enemies[count].ID === enemy){
 					enemies.splice(count,1);
@@ -176,8 +174,7 @@ function enemyMove(enemy) {
 			$('#health_bar').css("width","-=10");
 		}
 		else if (spaceshipHit === "shield_block"){
-			$(enemy).finish();
-			$(enemy).remove();
+			destroy(enemy);
 			for (count in enemies){
 				if (enemies[count].ID === enemy){
 					enemies.splice(count,1);

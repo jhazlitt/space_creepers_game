@@ -126,6 +126,12 @@ function projectileEnemyCollision(projectileX, projectileY, enemy) {
 	return false;
 }
 
+// Destroy projectile
+function destroyProjectile(projectileID) {
+	$(projectileID).finish();
+	$(projectileID).remove();
+}
+
 // Move projectile
 function moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed){
 	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, {step: function(now,fx){
@@ -145,8 +151,7 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 
 		// Check if the projectile is out of bounds
 		if ((projectileLeft <= 10) || (projectileLeft >= 585) || (projectileTop <= 0) || (projectileTop >= 580)){
-			$(projectileID).finish();
-			$(projectileID).remove();
+			destroyProjectile(projectileID);
 			projectileDestroyed = true;
 		}
 	}}, 5000);

@@ -108,7 +108,7 @@ function playGame(){
 			enemyMove("#enemy" + enemyNumber + "");
 			enemyNumber += 1;
 		}
-		spawnRate = Math.floor(Math.random() * (score / 30)) + 1;
+		spawnRate = Math.floor(Math.random() * (score / 50)) + 1;
 	},1000);
 
 	// Check for any collisions
@@ -189,7 +189,8 @@ function gameOver(){
 	$('.projectile').remove();
 	$('.enemy').remove();	
 	$('#game').append('<div id="game_over_message"><h1>GAME OVER</h1></div>');
-	$('#game_over_message').click(function(){
+	$('#game_over_message').append('<div id="restart_button"><b>RESTART?</b></div>');
+	$('#restart_button').click(function(){
 		location.reload();
 	});
 }

@@ -49,6 +49,15 @@ function playGame(){
 				shieldsUp = true;
 			}
 		}
+		else if (evt.keyCode === 89){
+			alert(enemies);
+		}
+		else if (evt.keyCode === 88){
+			alert(projectiles);
+		}
+		else if (evt.keyCode === 90){
+			alert(hitObjects);
+		}
 	});
 	$(document).keyup(function(evt) {
 		if (evt.keyCode === 32) {
@@ -99,20 +108,40 @@ function playGame(){
 		enemies.push("#enemy" + enemyNumber + "");
 		enemyMove("#enemy" + enemyNumber + "");
 		enemyNumber += 1;
-	},5000);
+	},1000);
 
 	// Check for any collisions
 	setInterval(function(){
 		displayScore();
+		// Check for enemy/projectile collision
+		for (var i = 0; i < projectiles.length; i++){
+			for (var j = 0; j < enemies.length; j++){
+				var hit = projectileEnemyCollision(projectiles[i],enemies[j]);
+				if (hit){
+					score += 1;
+					if (hitObjects.indexOf(projectiles[i]) === -1){
+						hitObjects.push(projectiles[i]);
+					}
+					if (hitObjects.indexOf(enemies[j]) === -1){
+						hitObjects.push(enemies[j]);
+					}
+				}
+			}
+		}
+	
 		// Check for enemies that hit spaceship
 		for (var i = 0; i < enemies.length; i++){
 			var hit = spaceshipCollision(enemies[i]);
 			if (hit === "hit"){
-				hitObjects.push(enemies[i]);
+				if (hitObjects.indexOf(enemies[i]) === -1){
+					hitObjects.push(enemies[i]);
+				}
 				$('#health_bar').css("width","-=10");
 			}
 			else if (hit === "shield_block"){
-				hitObjects.push(enemies[i]);
+				if (hitObjects.indexOf(enemies[i]) === -1){
+					hitObjects.push(enemies[i]);
+				}
 				score += 1;
 			}
 		}
@@ -120,20 +149,22 @@ function playGame(){
 		for (var i = 0; i < projectiles.length; i++){
 			var hit = outOfBounds(projectiles[i]);
 			if (hit){
-				hitObjects.push(projectiles[i]);
+				if (hitObjects.indexOf(projectiles[i]) === -1){
+					hitObjects.push(projectiles[i]);
+				}
 			}
 		}
 
 		// Destroy hit objects
 		for (var i = 0; i < hitObjects.length; i++){
 			destroy(hitObjects[i]);
-			var projectileIndex = projectiles.indexOf(hitObjects[i]);
 			var enemyIndex = enemies.indexOf(hitObjects[i]);
-			if (projectileIndex >= -1){
-				projectiles.splice(projectileIndex,1);
-			}
-			if (enemyIndex >= -1){
+			var projectileIndex = projectiles.indexOf(hitObjects[i]);
+			if (enemyIndex > -1){
 				enemies.splice(enemyIndex,1);
+			}
+			if (projectileIndex > -1){
+				projectiles.splice(projectileIndex,1);
 			}
 		}
 	
@@ -141,7 +172,7 @@ function playGame(){
 		while (hitObjects.length > 0){
 			hitObjects.pop();
 		}
-	}, 1);
+	}, 12);
 }
 
 // Update html for score
@@ -156,8 +187,8 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 
 // Check if projectile hit enemy
 function projectileEnemyCollision(projectileID, enemyID) {
-	var projectileX = $(projectileID).position().left;	
-	var projectileY = $(projectileID).position().top;	
+	var projectileX = $(projectileID).position().left + 10;	
+	var projectileY = $(projectileID).position().top + 10;	
 	var enemyLowerBoundX = $(enemyID).position().left;
 	var enemyUpperBoundX = enemyLowerBoundX + 50;
 	var enemyLowerBoundY = $(enemyID).position().top;
@@ -189,7 +220,7 @@ function destroy(ID) {
 function enemyMove(enemy) {
 	enemyMoveX = -$(enemy).position().left + 275;
 	enemyMoveY = -$(enemy).position().top + 275;
-	$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },5000);	
+	$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },5000);
 }
 
 // Check if enemy hit spaceship

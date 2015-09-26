@@ -1,18 +1,16 @@
-var projectileCount = 0;
+var hitObjects = [];
+var projectileNumber = 0;
+var enemyNumber = 0;
+var enemies = [];
+var projectiles = [];
 var spaceshipCenterX = 0;
 var spaceshipCenterY = 0;
 var mouseX = 0;
 var mouseY = 0;
 var radians = 0;
 var degrees = 0;
-var enemies = [];
 var score = 0;
-var enemyCount = 1;
 var shieldsUp = false;
-
-function enemy(ID) {
-	this.ID = ID
-}
 
 $(document).ready(setupGame);
 
@@ -62,15 +60,15 @@ function playGame(){
 	// Shoot projectiles with mouse click
 	$(document).click(shootProjectile);
 	function shootProjectile() {
-		var projectile = "projectile" + projectileCount;
+		var projectile = "projectile" + projectileNumber;
 		var projectileID = "#" + projectile;
 		$('#game').append('<div class="projectile" id="' + projectile + '"></div>');
 		var projectileRise = (425 * Math.cos(radians)) + 290;
 		var projectileRun = (425 * Math.sin(radians)) + 290;
 		var projectileDestroyed = false;
-
+		projectiles.push(projectileID);
 		moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed);
-		projectileCount += 1;
+		projectileNumber += 1;
 	}
 
 	// Spawn new enemies
@@ -95,13 +93,55 @@ function playGame(){
 			enemyLeft = 0;
 			enemyTop = Math.floor(Math.random()*550);
 		}
-		$('#game').append('<div class="enemy" id="enemy' + enemyCount + '"></div>');	
-		$('#enemy' + enemyCount + '').css("left","" + enemyLeft + "px");
-		$('#enemy' + enemyCount + '').css("top","" + enemyTop + "px");
-		enemies.push(new enemy("#enemy" + enemyCount + ""));
-		enemyMove("#enemy" + enemyCount + "");
-		enemyCount += 1;
+		$('#game').append('<div class="enemy" id="enemy' + enemyNumber + '"></div>');	
+		$('#enemy' + enemyNumber + '').css("left","" + enemyLeft + "px");
+		$('#enemy' + enemyNumber + '').css("top","" + enemyTop + "px");
+		enemies.push("#enemy" + enemyNumber + "");
+		enemyMove("#enemy" + enemyNumber + "");
+		enemyNumber += 1;
 	},5000);
+
+	// Check for any collisions
+	setInterval(function(){
+		displayScore();
+		// Check for enemies that hit spaceship
+		for (var i = 0; i < enemies.length; i++){
+			var hit = spaceshipCollision(enemies[i]);
+			if (hit === "hit"){
+				hitObjects.push(enemies[i]);
+				$('#health_bar').css("width","-=10");
+			}
+			else if (hit === "shield_block"){
+				hitObjects.push(enemies[i]);
+				score += 1;
+			}
+		}
+		// Check for out of bounds projectiles
+		for (var i = 0; i < projectiles.length; i++){
+			var hit = outOfBounds(projectiles[i]);
+			if (hit){
+				hitObjects.push(projectiles[i]);
+			}
+		}
+
+		// Destroy hit objects
+		for (var i = 0; i < hitObjects.length; i++){
+			destroy(hitObjects[i]);
+			var projectileIndex = projectiles.indexOf(hitObjects[i]);
+			var enemyIndex = enemies.indexOf(hitObjects[i]);
+			if (projectileIndex >= -1){
+				projectiles.splice(projectileIndex,1);
+			}
+			if (enemyIndex >= -1){
+				enemies.splice(enemyIndex,1);
+			}
+		}
+	
+		// Empty the hitObjects array
+		while (hitObjects.length > 0){
+			hitObjects.pop();
+		}
+	}, 1);
 }
 
 // Update html for score
@@ -111,36 +151,16 @@ function displayScore(){
 
 // Move projectile
 function moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed){
-	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, {duration: 1000, step: function(now,fx){
-		// Check if the projectile hit an enemy	
-		if ((!projectileHit) && (projectileDestroyed === false)) {
-			for (count in enemies){
-				var projectileHit = false;
-				projectileHit = projectileEnemyCollision(projectileID, enemies[count]);
-				if (projectileHit){
-					destroy(enemies[count].ID);
-					enemies.splice([count],1);
-					score += 1;
-					displayScore();
-				}
-			}
-		}
-
-		// Check if the projectile is out of bounds
-		if (outOfBounds(projectileID)){ 
-			destroy(projectileID);
-			projectileDestroyed = true;
-		}
-	}});
+	$(projectileID).animate({left: "" + projectileRun + "px", top: "" + projectileRise + "px"}, 1000);
 }
 
 // Check if projectile hit enemy
-function projectileEnemyCollision(projectileID, enemy) {
+function projectileEnemyCollision(projectileID, enemyID) {
 	var projectileX = $(projectileID).position().left;	
 	var projectileY = $(projectileID).position().top;	
-	var enemyLowerBoundX = $(enemy.ID).position().left;
+	var enemyLowerBoundX = $(enemyID).position().left;
 	var enemyUpperBoundX = enemyLowerBoundX + 50;
-	var enemyLowerBoundY = $(enemy.ID).position().top;
+	var enemyLowerBoundY = $(enemyID).position().top;
 	var enemyUpperBoundY = enemyLowerBoundY + 50;
 	
 	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
@@ -169,30 +189,7 @@ function destroy(ID) {
 function enemyMove(enemy) {
 	enemyMoveX = -$(enemy).position().left + 275;
 	enemyMoveY = -$(enemy).position().top + 275;
-	$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },{duration: 5000, step: function(){
-		var spaceshipHit = false;
-		spaceshipHit = spaceshipCollision(enemy);
-
-		if (spaceshipHit === "hit"){
-			destroy(enemy);
-			for (count in enemies){
-				if (enemies[count].ID === enemy){
-					enemies.splice(count,1);
-				}
-			}
-			$('#health_bar').css("width","-=10");
-		}
-		else if (spaceshipHit === "shield_block"){
-			destroy(enemy);
-			for (count in enemies){
-				if (enemies[count].ID === enemy){
-					enemies.splice(count,1);
-				}
-			}
-			score += 1;
-			displayScore();
-		}
-	}});	
+	$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },5000);	
 }
 
 // Check if enemy hit spaceship

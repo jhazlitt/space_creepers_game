@@ -1,4 +1,5 @@
 var gameEnd = false;
+var spawnRate = 1;
 var spawnInterval = null;
 var gameTimer = null;
 var hitObjects = [];
@@ -66,45 +67,48 @@ function playGame(){
 	function shootProjectile() {
 		var projectile = "projectile" + projectileNumber;
 		var projectileID = "#" + projectile;
-		if (!gameEnd){
-			$('#game').append('<div class="projectile" id="' + projectile + '"></div>');
-		}
 		var projectileRise = (425 * Math.cos(radians)) + 290;
 		var projectileRun = (425 * Math.sin(radians)) + 290;
 		var projectileDestroyed = false;
+		if (!gameEnd){
+			$('#game').append('<div class="projectile" id="' + projectile + '"></div>');
+		}
 		projectiles.push(projectileID);
 		moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed);
 		projectileNumber += 1;
 	}
 
-	// Spawn new enemies
+	// Spawn a certain number of enemies every second
 	spawnInterval = setInterval(function(){
-		var enemyLeft = 0;
-		var enemyTop = 0;
-		var locations = ["top","right","bottom","left"];
-		var thisLocation = locations[Math.floor(Math.random()*locations.length)];
-		if (thisLocation === "top"){
-			enemyLeft = Math.floor(Math.random()*550);
-			enemyTop = 0;
+		for (var i = 0; i < spawnRate; i++){
+			var enemyLeft = 0;
+			var enemyTop = 0;
+			var locations = ["top","right","bottom","left"];
+			var thisLocation = locations[Math.floor(Math.random()*locations.length)];
+			if (thisLocation === "top"){
+				enemyLeft = Math.floor(Math.random()*550);
+				enemyTop = 0;
+			}
+			else if (thisLocation === "right"){
+				enemyLeft = 550;
+				enemyTop = Math.floor(Math.random()*550);
+			}
+			else if (thisLocation === "bottom"){
+				enemyLeft = Math.floor(Math.random()*550);
+				enemyTop = 550;	
+			}
+			else if (thisLocation === "left"){
+				enemyLeft = 0;
+				enemyTop = Math.floor(Math.random()*550);
+			}
+			$('#game').append('<div class="enemy" id="enemy' + enemyNumber + '"></div>');	
+			$('#enemy' + enemyNumber + '').css("left","" + enemyLeft + "px");
+			$('#enemy' + enemyNumber + '').css("top","" + enemyTop + "px");
+			enemies.push("#enemy" + enemyNumber + "");
+			enemyMove("#enemy" + enemyNumber + "");
+			enemyNumber += 1;
 		}
-		else if (thisLocation === "right"){
-			enemyLeft = 550;
-			enemyTop = Math.floor(Math.random()*550);
-		}
-		else if (thisLocation === "bottom"){
-			enemyLeft = Math.floor(Math.random()*550);
-			enemyTop = 550;	
-		}
-		else if (thisLocation === "left"){
-			enemyLeft = 0;
-			enemyTop = Math.floor(Math.random()*550);
-		}
-		$('#game').append('<div class="enemy" id="enemy' + enemyNumber + '"></div>');	
-		$('#enemy' + enemyNumber + '').css("left","" + enemyLeft + "px");
-		$('#enemy' + enemyNumber + '').css("top","" + enemyTop + "px");
-		enemies.push("#enemy" + enemyNumber + "");
-		enemyMove("#enemy" + enemyNumber + "");
-		enemyNumber += 1;
+		spawnRate = Math.floor(Math.random() * (score / 30)) + 1;
 	},1000);
 
 	// Check for any collisions
@@ -235,7 +239,7 @@ function destroy(ID) {
 function enemyMove(enemy) {
 	enemyMoveX = -$(enemy).position().left + 275;
 	enemyMoveY = -$(enemy).position().top + 275;
-	$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },5000);
+	$(enemy).animate({ left: "+=" + enemyMoveX + "px", top: "+=" + enemyMoveY + "px" },10000);
 }
 
 // Check if enemy hit spaceship

@@ -1,5 +1,6 @@
 var gameEnd = false;
 var spawnInterval = null;
+var gameTimer = null;
 var hitObjects = [];
 var projectileNumber = 0;
 var enemyNumber = 0;
@@ -107,7 +108,7 @@ function playGame(){
 	},1000);
 
 	// Check for any collisions
-	setInterval(function(){
+	gameTimer = setInterval(function(){
 		displayScore();
 		// Check for enemy/projectile collision
 		for (var i = 0; i < projectiles.length; i++){
@@ -218,7 +219,7 @@ function projectileEnemyCollision(projectileID, enemyID) {
 function outOfBounds(ID){
 	IDLeft = $(ID).position().left;
 	IDTop = $(ID).position().top; 
-	if ((IDLeft <= 10) || (IDLeft >= 585) || (IDTop <= 0) || (IDTop >= 580)){
+	if ((IDLeft <= 10) || (IDLeft >= 580) || (IDTop <= 0) || (IDTop >= 580)){
 		return true;
 	}
 	return false;	

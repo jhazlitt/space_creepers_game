@@ -11,6 +11,19 @@ body {
 	margin: auto;
 }
 
+#game_over_message {
+	position: relative;
+	height: 400px;
+	width: 400px;
+	top: 100px;
+	left: 100px;
+	color: white;
+	background-color: #52bab3;
+	font-family: arial;
+	text-align: center;
+	font-size: 50px;
+}
+
 #status_bar {
 	position: relative;
 	height: 50px;

@@ -1,3 +1,5 @@
+var gameEnd = false;
+var spawnInterval = null;
 var hitObjects = [];
 var projectileNumber = 0;
 var enemyNumber = 0;
@@ -10,6 +12,7 @@ var mouseY = 0;
 var radians = 0;
 var degrees = 0;
 var score = 0;
+var health = 180;
 var shieldsUp = false;
 
 $(document).ready(setupGame);
@@ -49,15 +52,6 @@ function playGame(){
 				shieldsUp = true;
 			}
 		}
-		else if (evt.keyCode === 89){
-			alert(enemies);
-		}
-		else if (evt.keyCode === 88){
-			alert(projectiles);
-		}
-		else if (evt.keyCode === 90){
-			alert(hitObjects);
-		}
 	});
 	$(document).keyup(function(evt) {
 		if (evt.keyCode === 32) {
@@ -71,7 +65,9 @@ function playGame(){
 	function shootProjectile() {
 		var projectile = "projectile" + projectileNumber;
 		var projectileID = "#" + projectile;
-		$('#game').append('<div class="projectile" id="' + projectile + '"></div>');
+		if (!gameEnd){
+			$('#game').append('<div class="projectile" id="' + projectile + '"></div>');
+		}
 		var projectileRise = (425 * Math.cos(radians)) + 290;
 		var projectileRun = (425 * Math.sin(radians)) + 290;
 		var projectileDestroyed = false;
@@ -81,7 +77,7 @@ function playGame(){
 	}
 
 	// Spawn new enemies
-	setInterval(function(){
+	spawnInterval = setInterval(function(){
 		var enemyLeft = 0;
 		var enemyTop = 0;
 		var locations = ["top","right","bottom","left"];
@@ -137,6 +133,7 @@ function playGame(){
 					hitObjects.push(enemies[i]);
 				}
 				$('#health_bar').css("width","-=10");
+				health -= 10;
 			}
 			else if (hit === "shield_block"){
 				if (hitObjects.indexOf(enemies[i]) === -1){
@@ -172,7 +169,24 @@ function playGame(){
 		while (hitObjects.length > 0){
 			hitObjects.pop();
 		}
+
+		if (health <= 0){
+			gameOver();
+		}
 	}, 12);
+}
+
+// Clear game and display game over message
+function gameOver(){
+	gameEnd = true;
+	clearInterval(spawnInterval);
+	$('#space_ship').remove();
+	$('.projectile').remove();
+	$('.enemy').remove();	
+	$('#game').append('<div id="game_over_message"><h1>GAME OVER</h1></div>');
+	$('#game_over_message').click(function(){
+		location.reload();
+	});
 }
 
 // Update html for score

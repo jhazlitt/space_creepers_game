@@ -3,6 +3,7 @@ var spawnRate = 1;
 var spawnInterval = null;
 var gameTimer = null;
 var hitObjects = [];
+var shieldChargerActive = false;
 var shieldChargerNumber = 0;
 var projectileNumber = 0;
 var enemyNumber = 0;
@@ -114,6 +115,8 @@ function playGame(){
 
 	// Have a chance of spawing a shield charger every second
 	shieldChargerInterval = setInterval(function(){
+	if (!shieldChargerActive){
+		shieldChargerActive = true;
 		var chance = Math.floor(Math.random() * 30);
 
 		var shieldChargerLeft = 0;
@@ -178,6 +181,7 @@ function playGame(){
 		var chargerID = "#shield_charger" + shieldChargerNumber + "";
 		moveShieldCharger(chargerID, leftOffset, topOffset);
 		shieldChargerNumber += 1;
+	}	
 	},1000);
 
 	// Check for any collisions
@@ -278,7 +282,10 @@ function createShieldCharger(leftPosition, topPosition){
 
 // Move the shield charger
 function moveShieldCharger(ID, leftOffset, topOffset){
-	$(ID).animate({left: "+=" + leftOffset + "px", top: "+=" + topOffset + "px"},{duration: 5000});	
+	$(ID).animate({left: "+=" + leftOffset + "px", top: "+=" + topOffset + "px"},5000,function(){
+		destroy(ID);
+		shieldChargerActive = false;
+	});	
 }
 
 // Move projectile

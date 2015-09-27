@@ -9,6 +9,7 @@ var projectileNumber = 0;
 var enemyNumber = 0;
 var enemies = [];
 var projectiles = [];
+var shieldChargers = [];
 var spaceshipCenterX = 0;
 var spaceshipCenterY = 0;
 var mouseX = 0;
@@ -111,86 +112,106 @@ function playGame(){
 			enemyNumber += 1;
 		}
 		spawnRate = Math.floor(Math.random() * (score / 50)) + 1;
-	},100000); // Changed from 1000
+	},1000);
 
 	// Have a chance of spawing a shield charger every second
 	shieldChargerInterval = setInterval(function(){
-	if (!shieldChargerActive){
-		shieldChargerActive = true;
 		var chance = Math.floor(Math.random() * 30);
+		if (chance === 0){
+			if (!shieldChargerActive){
+				shieldChargerActive = true;
+				var chance = Math.floor(Math.random() * 30);
 
-		var shieldChargerLeft = 0;
-		var shieldChargerTop = 0;
-		var leftOffset = 0;
-		var topOffset = 0;
-		var areas = ["top","right","bottom","left"];
-		var thisArea = areas[Math.floor(Math.random() * areas.length)];
+				var shieldChargerLeft = 0;
+				var shieldChargerTop = 0;
+				var leftOffset = 0;
+				var topOffset = 0;
+				var areas = ["top","right","bottom","left"];
+				var thisArea = areas[Math.floor(Math.random() * areas.length)];
 
-		// direction 0 means left or down, 1 means up or right depending on the context
-		var direction = Math.floor(Math.random() * 2);
-		if (thisArea === "top"){
-			if (direction === 0){
-				shieldChargerLeft = 550;
-				shieldChargerTop = Math.floor(Math.random() * 200);			
-				leftOffset = -550;	
-			}
-			else if (direction === 1){
-				shieldChargerLeft = 0;
-				shieldChargerTop = Math.floor(Math.random() * 200);	
-				leftOffset = 550;
+				// direction 0 means left or down, 1 means up or right depending on the context
+				var direction = Math.floor(Math.random() * 2);
+				if (thisArea === "top"){
+					if (direction === 0){
+						shieldChargerLeft = 550;
+						shieldChargerTop = Math.floor(Math.random() * 200);			
+						leftOffset = -550;	
+					}
+					else if (direction === 1){
+						shieldChargerLeft = 0;
+						shieldChargerTop = Math.floor(Math.random() * 200);	
+						leftOffset = 550;
+					}	
+				}
+				else if (thisArea === "right"){
+					if (direction === 0){
+						shieldChargerLeft = Math.floor(Math.random() * 200) + 350;	
+						shieldChargerTop = 0;
+						topOffset = 550;
+					}
+					else if (direction === 1){
+						shieldChargerLeft = Math.floor(Math.random() * 200) + 350;
+						shieldChargerTop = 550;
+						topOffset = -550;
+					}
+				}
+				else if (thisArea === "bottom"){
+					if (direction === 0){
+						shieldChargerLeft = 550;
+						shieldChargerTop = Math.floor(Math.random() * 200) + 350;
+						leftOffset = -550;
+					}
+					else if (direction === 1){
+						shieldChargerLeft = 0;
+						shieldChargerTop = Math.floor(Math.random() * 200) + 350;
+						leftOffset = 550;
+					}
+				}
+				else if (thisArea === "left"){
+					if (direction === 0){
+						shieldChargerLeft = Math.floor(Math.random() * 200);
+						shieldChargerTop = 0; 
+						topOffset = 550;
+					}
+					else if (direction === 1){
+						shieldChargerLeft = Math.floor(Math.random() * 200);
+						shieldChargerTop = 550;
+						topOffset = -550;
+					}
+				}		
+				
+				createShieldCharger(shieldChargerLeft, shieldChargerTop);
+				var chargerID = "#shield_charger" + shieldChargerNumber + "";
+				moveShieldCharger(chargerID, leftOffset, topOffset);
+				shieldChargers.push(chargerID);
+				shieldChargerNumber += 1;
 			}	
 		}
-		else if (thisArea === "right"){
-			if (direction === 0){
-				shieldChargerLeft = Math.floor(Math.random() * 200) + 350;	
-				shieldChargerTop = 0;
-				topOffset = 550;
-			}
-			else if (direction === 1){
-				shieldChargerLeft = Math.floor(Math.random() * 200) + 350;
-				shieldChargerTop = 550;
-				topOffset = -550;
-			}
-		}
-		else if (thisArea === "bottom"){
-			if (direction === 0){
-				shieldChargerLeft = 550;
-				shieldChargerTop = Math.floor(Math.random() * 200) + 350;
-				leftOffset = -550;
-			}
-			else if (direction === 1){
-				shieldChargerLeft = 0;
-				shieldChargerTop = Math.floor(Math.random() * 200) + 350;
-				leftOffset = 550;
-			}
-		}
-		else if (thisArea === "left"){
-			if (direction === 0){
-				shieldChargerLeft = Math.floor(Math.random() * 200);
-				shieldChargerTop = 0; 
-				topOffset = 550;
-			}
-			else if (direction === 1){
-				shieldChargerLeft = Math.floor(Math.random() * 200);
-				shieldChargerTop = 550;
-				topOffset = -550;
-			}
-		}		
-		
-		createShieldCharger(shieldChargerLeft, shieldChargerTop);
-		var chargerID = "#shield_charger" + shieldChargerNumber + "";
-		moveShieldCharger(chargerID, leftOffset, topOffset);
-		shieldChargerNumber += 1;
-	}	
 	},1000);
 
 	// Check for any collisions
 	gameTimer = setInterval(function(){
 		displayScore();
+		// Check for shield charger/projectile collision
+		for (var i = 0; i < shieldChargers.length; i++){
+			for (var j = 0; j < projectiles.length; j++){
+				var hit = projectileObjectCollision(projectiles[j],shieldChargers[i]);
+				if (hit){
+					$('#shield_bar').css("width","180");
+					if (hitObjects.indexOf(shieldChargers[i]) === -1){
+						hitObjects.push(shieldChargers[i]);
+					}
+					if (hitObjects.indexOf(projectiles[j]) === -1){
+						hitObjects.push(projectiles[j]);
+					}
+				}
+			}
+		}
+
 		// Check for enemy/projectile collision
 		for (var i = 0; i < projectiles.length; i++){
 			for (var j = 0; j < enemies.length; j++){
-				var hit = projectileEnemyCollision(projectiles[i],enemies[j]);
+				var hit = projectileObjectCollision(projectiles[i],enemies[j]);
 				if (hit){
 					score += 1;
 					if (hitObjects.indexOf(projectiles[i]) === -1){
@@ -235,11 +256,16 @@ function playGame(){
 			destroy(hitObjects[i]);
 			var enemyIndex = enemies.indexOf(hitObjects[i]);
 			var projectileIndex = projectiles.indexOf(hitObjects[i]);
+			var chargerIndex = shieldChargers.indexOf(hitObjects[i]);
 			if (enemyIndex > -1){
 				enemies.splice(enemyIndex,1);
 			}
 			if (projectileIndex > -1){
 				projectiles.splice(projectileIndex,1);
+			}
+			if (chargerIndex > -1){
+				shieldChargers.splice(chargerIndex,1);
+				shieldChargerActive = false;
 			}
 		}
 	
@@ -258,6 +284,7 @@ function playGame(){
 function gameOver(){
 	gameEnd = true;
 	clearInterval(spawnInterval);
+	clearInterval(shieldChargerInterval);
 	$('#space_ship').remove();
 	$('.projectile').remove();
 	$('.enemy').remove();	
@@ -284,6 +311,7 @@ function createShieldCharger(leftPosition, topPosition){
 function moveShieldCharger(ID, leftOffset, topOffset){
 	$(ID).animate({left: "+=" + leftOffset + "px", top: "+=" + topOffset + "px"},5000,function(){
 		destroy(ID);
+		shieldChargers.pop();
 		shieldChargerActive = false;
 	});	
 }
@@ -294,15 +322,15 @@ function moveProjectile(projectileID, projectileRise, projectileRun, projectileD
 }
 
 // Check if projectile hit enemy
-function projectileEnemyCollision(projectileID, enemyID) {
+function projectileObjectCollision(projectileID, objectID) {
 	var projectileX = $(projectileID).position().left + 10;	
 	var projectileY = $(projectileID).position().top + 10;	
-	var enemyLowerBoundX = $(enemyID).position().left;
-	var enemyUpperBoundX = enemyLowerBoundX + 50;
-	var enemyLowerBoundY = $(enemyID).position().top;
-	var enemyUpperBoundY = enemyLowerBoundY + 50;
+	var objectLowerBoundX = $(objectID).position().left;
+	var objectUpperBoundX = objectLowerBoundX + 50;
+	var objectLowerBoundY = $(objectID).position().top;
+	var objectUpperBoundY = objectLowerBoundY + 50;
 	
-	if (((projectileX >= enemyLowerBoundX) && (projectileX <= enemyUpperBoundX)) && ((projectileY >= enemyLowerBoundY) && (projectileY <= enemyUpperBoundY))){
+	if (((projectileX >= objectLowerBoundX) && (projectileX <= objectUpperBoundX)) && ((projectileY >= objectLowerBoundY) && (projectileY <= objectUpperBoundY))){
 		return true;
 	}
 	return false;

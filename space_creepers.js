@@ -175,8 +175,10 @@ function playGame(){
 		}		
 		
 		createShieldCharger(shieldChargerLeft, shieldChargerTop);
-		moveShieldCharger(leftOffset, topOffset);
-	},1);
+		var chargerID = "#shield_charger" + shieldChargerNumber + "";
+		moveShieldCharger(chargerID, leftOffset, topOffset);
+		shieldChargerNumber += 1;
+	},1000);
 
 	// Check for any collisions
 	gameTimer = setInterval(function(){
@@ -272,7 +274,11 @@ function createShieldCharger(leftPosition, topPosition){
 	$('#game').append('<div class ="shield_charger" id="shield_charger' + shieldChargerNumber + '"></div>');
 	$('#shield_charger' + shieldChargerNumber + '').css("left", "" + leftPosition + "px");
 	$('#shield_charger' + shieldChargerNumber + '').css("top", "" + topPosition + "px");
-	shieldChargerNumber += 1;
+}
+
+// Move the shield charger
+function moveShieldCharger(ID, leftOffset, topOffset){
+	$(ID).animate({left: "+=" + leftOffset + "px", top: "+=" + topOffset + "px"},{duration: 5000});	
 }
 
 // Move projectile

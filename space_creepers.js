@@ -197,6 +197,7 @@ function playGame(){
 			for (var j = 0; j < projectiles.length; j++){
 				var hit = projectileObjectCollision(projectiles[j],shieldChargers[i]);
 				if (hit){
+					score += 10;
 					$('#shield_bar').css("width","180");
 					if (hitObjects.indexOf(shieldChargers[i]) === -1){
 						hitObjects.push(shieldChargers[i]);
@@ -288,6 +289,7 @@ function gameOver(){
 	$('#space_ship').remove();
 	$('.projectile').remove();
 	$('.enemy').remove();	
+	$('.shield_charger').remove();
 	$('#game').append('<div id="game_over_message"><h1>GAME OVER</h1></div>');
 	$('#game_over_message').append('<div id="restart_button"><b>RESTART?</b></div>');
 	$('#restart_button').click(function(){

@@ -96,6 +96,14 @@ body {
 	background-color: #52bab3;
 }
 
+.shield_charger {
+	position: absolute;
+	height: 50px;
+	width: 50px;
+	border-radius: 25px;
+	background-color: #52bab3;
+}
+
 .enemy {
 	position: absolute;
 	height: 50px;	

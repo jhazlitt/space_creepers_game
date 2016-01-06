@@ -1,3 +1,7 @@
+table {
+	margin: auto;
+}
+
 body {
 	background-color: gray;
 }
@@ -11,8 +15,20 @@ body {
 	margin: auto;
 }
 
+#intro_screen {
+	position: absolute;
+	height: 600px;
+	width: 600px;
+	top: 0px;
+	left: 0px;
+	background-color: green;
+	font-family: arial;
+	color: white;
+	text-align: center;
+}
+
 #game_over_message {
-	position: relative;
+	position: absolute;
 	padding: 20px;
 	height: 400px;
 	width: 400px;
@@ -25,8 +41,40 @@ body {
 	font-size: 50px;
 }
 
-#restart_button {
+#high_scores {
 	position: relative;
+	height: 600px;
+	width: 800px;
+	background-color: white;
+	margin: 0;
+	text-align: center;
+}
+
+#high_score_entry {
+	position: relative;
+	height: 600px;
+	width: 800px;
+	background-color: white;
+	margin: auto;
+	text-align: center;
+}
+
+#start_button {
+	position: absolute;
+	height: 50px;
+	width: 200px;
+	color: white;
+	background-color: #00247D;
+	font-family: arial;
+	font-size: 30px;
+	text-align: center;
+	top: 500px;
+	left: 200px;
+	line-height: 50px;
+}
+
+#restart_button {
+	position: absolute;
 	height: 50px;
 	width: 200px;
 	color: white;
@@ -114,8 +162,8 @@ body {
 
 .projectile {
 	position: absolute;
-	top: 290px;
-	left: 290px;
+/*	top: 290px;
+	left: 290px; */
 	height: 20px;
 	width: 20px;
 	border-radius: 10px;
@@ -128,8 +176,8 @@ body {
 	width: 100px;
 	border-radius: 50px;
 	background-color: #52bab3;
-	top: 250px;
-	left: 250px;
+/*	top: 250px;
+	left: 250px; */
 	z-index: 2;
 }
 
@@ -138,7 +186,7 @@ body {
 	height: 50px;
 	width: 50px;
 	background-color: white;
-	top: 275px;
-	left: 275px;
+/*	top: 275px;
+	left: 275px; */
 	z-index: 3;
 }

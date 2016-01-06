@@ -20,9 +20,44 @@ var score = 0;
 var health = 180;
 var shieldsUp = false;
 
-$(document).ready(setupGame);
+$(document).ready(test);
+
+function test(){
+	$('#game').remove();
+	$('#status_bar').remove();
+	$('body').append("<div id='high_score_entry'></div>");
+	$('#high_score_entry').append("<br /><br />");
+	$('#high_score_entry').append("<p style='font-size: 40px'>You got a high score!</p>");
+	$('#high_score_entry').append("<p style='font-size: 40px'>Enter your initials:</p>");
+	$('#high_score_entry').append("<input type='text' maxlength='3' value='AAA' style='font-size: 100px; width: 300px'></input>");
+	$('#high_score_entry').append("<br /><br /><br />");
+	$('#high_score_entry').append("<input type='button' value='SUBMIT' style='font-size: 50px'></input>");
+}
+
+function introScreen(){
+	$('#game').append("<div id='intro_screen'></div>");
+	$('#intro_screen').append("<b><p style='font-size: 60px'>Space Shooter</p></b>");
+	$('#intro_screen').append("<table style='font-size: 30px; text-align: left'><tr><td>Point + click to shoot</td></tr><td>Activate shield with spacebar</td></tr><tr><td>Destroy enemies for points</td></table>");
+	$('#intro_screen').append("<div id='start_button'><b>START</b></div>");
+	$('#intro_screen').click(setupGame);
+}
 
 function setupGame(){
+	// Remove all of the icons from the intro screen
+	$('#intro_screen').remove();
+	$('.projectile').remove();
+	$('#shield').remove();
+	$('#space_ship').remove();
+	$('.enemy').remove();
+	$('.shield_charger').remove();
+
+	// Add back the necessary items
+	$('#game').append("<div id='space_ship'></div>");
+	$('#space_ship').css("top","275px");
+	$('#space_ship').css("left","275px");
+	$('#game').append("<div id='shield'></div>");
+	$('#shield').css("top","250px");
+	$('#shield').css("left","250px");
 	displayScore();
 	$('#shield').hide();
 	playGame();
@@ -75,6 +110,8 @@ function playGame(){
 		var projectileDestroyed = false;
 		if (!gameEnd){
 			$('#game').append('<div class="projectile" id="' + projectile + '"></div>');
+			$('#' + projectile + '').css("top","290px");
+			$('#' + projectile + '').css("left","290px");
 		}
 		projectiles.push(projectileID);
 		moveProjectile(projectileID, projectileRise, projectileRun, projectileDestroyed);
@@ -285,11 +322,15 @@ function playGame(){
 function gameOver(){
 	gameEnd = true;
 	clearInterval(spawnInterval);
+	$('#space_ship').remove();
+	$('.projectile').remove();
+	$('.enemy').remove();	
 	clearInterval(shieldChargerInterval);
 	$('#space_ship').remove();
 	$('.projectile').remove();
 	$('.enemy').remove();	
 	$('.shield_charger').remove();
+
 	$('#game').append('<div id="game_over_message"><h1>GAME OVER</h1></div>');
 	$('#game_over_message').append('<div id="restart_button"><b>RESTART?</b></div>');
 	$('#restart_button').click(function(){
